@@ -1,6 +1,10 @@
 [package]
 name = "carbonrs"
 version = "0.1.0"
+authors = ["Cesar Daniel <cesardaniel.9611@gmail.com"]
+description = "A Rust based cli for generating stunning images for you to share."
+repository = "https://github.com/dantescur/carbonrs"
+license = "MIT"
 edition = "2021"
 
 [dependencies]
