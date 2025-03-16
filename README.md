@@ -1,25 +1,17 @@
-<div align="center" style="border: 2px solid #ffcc00; padding: 16px; border-radius: 8px; background-color: #fffbe6; margin-bottom: 24px;">
-
-### 🚨 **Important Notice: Pull Requests Welcome, But Please Open an Issue First!** 🚨
-
-We're currently planning a **major refactoring and modularization effort** for Carbonrs. While we greatly appreciate pull requests, please:
-
-1. **Open an issue first** to discuss your proposed changes.
-2. Wait for confirmation before starting work on larger features.
-
-This will help us avoid conflicts with ongoing architectural changes and ensure your contributions align with our new structure. Thank you for your understanding and support! 🙏
-
-</div>
+> ### 🚨 Important Notice: Pull Requests Welcome, But Please Open an Issue First! 🚨
+>
+> I'm currently planning a **major refactoring and modularization effort** for Carbonrs. While I greatly appreciate pull requests, please:
+>
+> - **Open an issue first** to discuss your proposed changes.
+> - Wait for confirmation before starting work on larger features.
+>
+> This will help us avoid conflicts with ongoing architectural changes and ensure your contributions align with the new structure. Thank you for your understanding and support! 🙏
 
 ---
-
-<div align="center">
 
 # Carbonrs 🖼️
 
 **A CLI tool for generating beautiful, customizable code snippet images** - right from your terminal. Inspired by [carbon.now.sh](https://carbon.now.sh), Carbonrs lets you create stunning visuals of your code with syntax highlighting, customizable fonts, themes, sizes, and more.
-
-</div>
 
 ---
 
@@ -158,8 +150,5 @@ Carbonrs is licensed under the **MIT License**. See the [LICENSE](LICENSE) file 
 
 ---
 
-<div align="center">
-
 **Happy coding!** 🦀 Create stunning code visuals with Carbonrs!
 
-</div>
