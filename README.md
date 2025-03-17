@@ -1,17 +1,33 @@
-> ### 🚨 Important Notice: Pull Requests Welcome, But Please Open an Issue First! 🚨
->
-> I'm currently planning a **major refactoring and modularization effort** for Carbonrs. While I greatly appreciate pull requests, please:
->
-> - **Open an issue first** to discuss your proposed changes.
-> - Wait for confirmation before starting work on larger features.
->
-> This will help us avoid conflicts with ongoing architectural changes and ensure your contributions align with the new structure. Thank you for your understanding and support! 🙏
-
----
-
 # Carbonrs 🖼️
 
+<!--toc:start-->
+
+- [Carbonrs 🖼️](#carbonrs-🖼️)
+  - [Overview](#overview)
+  - [Features](#features)
+  - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [Install via Cargo](#install-via-cargo)
+    - [Build from Source](#build-from-source)
+  - [Usage](#usage)
+    - [Basic Command](#basic-command)
+    - [Example](#example)
+  - [Customization](#customization)
+    - [Fonts](#fonts)
+    - [Themes](#themes)
+    - [Sizes & Layout](#sizes-layout)
+    - [Window Controls](#window-controls)
+  - [Roadmap](#roadmap)
+  - [Contributing](#contributing)
+  - [License](#license)
+  - [Acknowledgments](#acknowledgments)
+  <!--toc:end-->
+
 **A CLI tool for generating beautiful, customizable code snippet images** - right from your terminal. Inspired by [carbon.now.sh](https://carbon.now.sh), Carbonrs lets you create stunning visuals of your code with syntax highlighting, customizable fonts, themes, sizes, and more.
+
+### Example output
+
+![example image output](./output.png)
 
 ---
 
@@ -93,7 +109,7 @@ Carbonrs aims to offer extensive customization options, both now and in future r
 ### Fonts
 
 - **Current**: Embedded Fira Code Nerd Font Mono.
-- **Planned**: Support for custom fonts.
+- **Current**: Support for custom fonts (available through the --list-fonts flag).
 
 ### Themes
 
@@ -102,7 +118,7 @@ Carbonrs aims to offer extensive customization options, both now and in future r
 
 ### Sizes & Layout
 
-- Customize font size, line height, and image dimensions.
+- **Planned**: Customize font size, line height, and image dimensions.
 
 ### Window Controls
 
@@ -116,7 +132,7 @@ Carbonrs aims to offer extensive customization options, both now and in future r
 ## Roadmap
 
 - [x] Basic CLI functionality for generating code snippet images.
-- [ ] Support for dynamic font selection.
+- [x] Support for dynamic font selection.
 - [ ] Additional themes and support for user-defined themes.
 - [ ] Enhanced customization for background colors, window controls, and overall layout.
 - [ ] Better handling of diverse file types and languages.
@@ -151,4 +167,3 @@ Carbonrs is licensed under the **MIT License**. See the [LICENSE](LICENSE) file 
 ---
 
 **Happy coding!** 🦀 Create stunning code visuals with Carbonrs!
-
