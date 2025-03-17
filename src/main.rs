@@ -1,14 +1,18 @@
-use std::ops::Deref;
+use std::fs;
+use std::path::PathBuf;
 
 // Import necessary crates and modules used for font handling, image manipulation,
 // command line argument parsing, and syntax highlighting.
 use ab_glyph::{Font, ScaleFont}; // For font scaling and rendering text
 use ab_glyph::{FontRef, PxScale}; // For referencing font data and pixel scaling
 use anyhow::Result; // For simplified error handling
-use clap::Parser; // For command-line argument parsing
+use clap::Parser;
+use dirs::home_dir;
+// For command-line argument parsing
 use image::Rgba;
 use image::RgbaImage;
 use imageproc::drawing::{draw_filled_circle_mut, draw_text_mut};
+use serde::Deserialize;
 use syntect::highlighting::Theme;
 // For drawing shapes and text on images
 use syntect::{
@@ -28,14 +32,72 @@ struct Args {
     /// Path to the output image file (default: output.png)
     output: Option<String>,
 
+    /// An user selected theme
+    #[arg(short, long)]
+    pub theme: Option<String>,
+
     /// Add line numbers
     #[arg(short, long, default_value_t = false)]
     line_numbers: bool,
 }
 
+#[derive(Deserialize, Debug, Default)]
+struct Config {
+    line_numbers: Option<bool>,
+    font_size: Option<f32>,
+    padding: Option<u32>,
+    theme: Option<String>,
+}
+
+fn load_config() -> Config {
+    let config_path = home_dir()
+        .map(|mut path| {
+            path.push(".config");
+            path.push("carbonrs");
+            path.push("config.toml");
+            path
+        })
+        .unwrap_or_else(|| PathBuf::from("config.toml"));
+
+    if config_path.exists() {
+        let config_str = fs::read_to_string(config_path).unwrap_or_default();
+        toml::from_str(&config_str).unwrap_or_default()
+    } else {
+        Config::default()
+    }
+}
+
+#[derive(Debug)]
+struct MergedConfig {
+    line_numbers: bool,
+    font_size: f32,
+    padding: u32,
+    theme: String,
+}
+
+impl MergedConfig {
+    fn merge(args: &Args, config: &Config) -> Self {
+        MergedConfig {
+            line_numbers: if args.line_numbers {
+                true
+            } else {
+                config.line_numbers.unwrap_or(false)
+            },
+            font_size: config.font_size.unwrap_or(24.0),
+            padding: config.padding.unwrap_or(40),
+            theme: config.theme.unwrap() || "base16-mocha.dark".to_string(),
+        }
+    }
+}
 fn main() -> Result<()> {
     // Parse command-line arguments (input file and optional output file)
     let args = Args::parse();
+
+    // Load clnfiguration from file
+    let config = load_config();
+
+    // Merge cli args with the config file
+    let merged_config = MergedConfig::merge(&args, &config);
     // Use the provided output path or default to "output.png"
     let output_path = args.output.unwrap_or_else(|| "output.png".to_string());
 
@@ -75,8 +137,7 @@ fn main() -> Result<()> {
 
     // Define the font size to use for rendering the text.
     // Calculate the scaling factor based on the desired font size.
-    let font_size = 24.0;
-    let scale = PxScale::from(font_size);
+    let scale = PxScale::from(merged_config.font_size);
     // Compute the line height using the font's unscaled height and converting it with the scale factor.
     let line_height = {
         let line_heigh_unscaled = font.height_unscaled();
@@ -93,7 +154,6 @@ fn main() -> Result<()> {
     // - Define padding around the content.
     // - Reserve extra space at the top for window control simulation.
     let padding = 40;
-    let window_controls_height = 60;
     // Determine the maximum number of characters in any line (this affects image width).
     let max_line_chars = highlighted_lines
         .iter()
@@ -105,17 +165,18 @@ fn main() -> Result<()> {
         .max()
         .unwrap_or(0);
     // Calculate the image width by accounting for horizontal padding and text width.
-    let image_width = padding * 2 + (max_line_chars as u32 * char_width.ceil() as u32);
+    let image_width =
+        merged_config.padding * 2 + (max_line_chars as u32 * char_width.ceil() as u32);
     // Calculate the image height by adding vertical padding, the height for window controls,
     // and the total height needed for all lines of code.
     let image_height =
-        padding * 2 + window_controls_height + (highlighted_lines.len() as u32 * line_height);
+        merged_config.padding * 2 + 60 + (highlighted_lines.len() as u32 * line_height);
 
     let _ = build_image(
         image_width,
         image_height,
         padding,
-        window_controls_height,
+        60,
         scale,
         font,
         line_height,
@@ -123,7 +184,7 @@ fn main() -> Result<()> {
         char_width,
         output_path,
         theme,
-        args.line_numbers,
+        merged_config.line_numbers,
     );
 
     // Return Ok(()) to indicate successful execution.
