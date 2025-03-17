@@ -1,11 +1,16 @@
+use std::ops::Deref;
+
 // Import necessary crates and modules used for font handling, image manipulation,
 // command line argument parsing, and syntax highlighting.
 use ab_glyph::{Font, ScaleFont}; // For font scaling and rendering text
 use ab_glyph::{FontRef, PxScale}; // For referencing font data and pixel scaling
 use anyhow::Result; // For simplified error handling
 use clap::Parser; // For command-line argument parsing
-use image::{Rgba, RgbaImage}; // For creating and manipulating RGBA images
-use imageproc::drawing::{draw_filled_circle_mut, draw_text_mut}; // For drawing shapes and text on images
+use image::Rgba;
+use image::RgbaImage;
+use imageproc::drawing::{draw_filled_circle_mut, draw_text_mut};
+use syntect::highlighting::Theme;
+// For drawing shapes and text on images
 use syntect::{
     easy::HighlightLines,            // For line-by-line syntax highlighting
     highlighting::{Style, ThemeSet}, // For text style and theme management
@@ -22,6 +27,10 @@ struct Args {
 
     /// Path to the output image file (default: output.png)
     output: Option<String>,
+
+    /// Add line numbers
+    #[arg(short, long, default_value_t = false)]
+    line_numbers: bool,
 }
 
 fn main() -> Result<()> {
@@ -47,7 +56,7 @@ fn main() -> Result<()> {
 
     // Choose a fixed theme for highlighting.
     // TODO: Allow users to select or dynamically choose a theme.
-    let theme = &ts.themes["base16-ocean.dark"];
+    let theme = &ts.themes["base16-mocha.dark"];
 
     // Load embedded monospace font (Fira Code Nerd Font Mono) from the assets directory.
     // This ensures consistent rendering of code characters.
@@ -113,6 +122,8 @@ fn main() -> Result<()> {
         highlighted_lines,
         char_width,
         output_path,
+        theme,
+        args.line_numbers,
     );
 
     // Return Ok(()) to indicate successful execution.
@@ -130,20 +141,24 @@ fn build_image(
     highlighted_lines: Vec<Vec<(Style, &str)>>,
     char_width: f32,
     output_path: String,
+    theme: &Theme,
+    line_numbers: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
     // Create a new RGBA image buffer with the computed dimensions.
-
     let mut img = RgbaImage::new(width, height);
 
-    // Fill the entire image with a dark gray background (similar to Carbon's color scheme).
-    // TODO: Allow dynamic background color configuration.
-    let bg_color = Rgba([40, 44, 53, 255]);
+    // Fill the entire image with the theme's background color.
+    let bg_color = Rgba([
+        theme.settings.background.unwrap().r,
+        theme.settings.background.unwrap().g,
+        theme.settings.background.unwrap().b,
+        theme.settings.background.unwrap().a,
+    ]);
     for pixel in img.pixels_mut() {
         *pixel = bg_color;
     }
 
-    // Define colors for simulated window control buttons (red, yellow, green),
-    // similar to those on macOS.
+    // Define colors for simulated window control buttons (red, yellow, green).
     let button_colors = [
         Rgba([255, 95, 86, 255]),  // Red
         Rgba([255, 189, 46, 255]), // Yellow
@@ -161,30 +176,56 @@ fn build_image(
     }
 
     // Set starting positions for the code text on the image.
-    // text_start_x: left margin for code text.
-    // text_start_y: vertical offset including the window controls area.
-    let text_start_x = padding as i32;
+    let mut text_start_x = padding as i32;
     let text_start_y = padding as i32 + win_height as i32;
+
+    // If line numbers are enabled, calculate the width required for the line numbers.
+    let line_number_width = if line_numbers {
+        let max_line_number = highlighted_lines.len();
+        let max_digits = max_line_number.to_string().len();
+        (max_digits as f32 * char_width).ceil() as i32 + 20 // Add some padding
+    } else {
+        0
+    };
+
+    // Adjust the text starting position to the right to make space for line numbers.
+    text_start_x += line_number_width;
+
     // Render each highlighted line of code.
     for (line_num, line) in highlighted_lines.iter().enumerate() {
         // Reset x position to the left margin for each new line.
         let mut x = text_start_x;
-        // Calculate y-coordinate for the current line. This takes into account the line number,
-        // line height, and the font's ascent to ensure proper vertical alignment.
+        // Calculate y-coordinate for the current line.
         let assent_px = (font.ascent_unscaled() / font.units_per_em().unwrap_or(1.0)) * scale.y;
         let y = text_start_y + (line_num as i32 * line_height as i32) + assent_px as i32;
+
+        // If line numbers are enabled, render the line number.
+        if line_numbers {
+            let line_number = (line_num + 1).to_string();
+            let line_number_color = Rgba([128, 128, 128, 255]); // Gray color for line numbers
+            draw_text_mut(
+                &mut img,
+                line_number_color,
+                padding as i32,
+                y,
+                scale,
+                &font,
+                &line_number,
+            );
+        }
 
         // Process each token (styled segment) in the current line.
         for (style, text) in line {
             // Replace tab characters with four spaces for uniform spacing.
             let text = text.replace('\t', "    ");
+            let text = text.replace("\n", " ");
             if text.is_empty() {
                 continue;
             }
 
             // Convert the syntect color (used for syntax highlighting) to an RGBA color.
             let color = style.foreground;
-            let rgba = Rgba([color.r, color.g, color.b, 255]);
+            let rgba = Rgba([color.r, color.g, color.b, color.a]);
 
             // Render the text token on the image using the specified font, color, and scale.
             draw_text_mut(&mut img, rgba, x, y, scale, &font, &text);
