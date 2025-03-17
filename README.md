@@ -27,6 +27,8 @@
 
 ### Example output
 
+Example output using --font "CaskaydiaCove Nerd Font Mono" --theme "base16-eighties.dark"
+
 ![example image output](./output.png)
 
 ---
