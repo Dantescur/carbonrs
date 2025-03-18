@@ -17,3 +17,4 @@ imageproc = "0.25.0"
 serde = { version = "1.0.219", features = ["derive"] }
 syntect = "5.2.0"
 toml = "0.8.20"
+yazi-prebuild = { version = "0.1.2", features = ["build_deps"] }

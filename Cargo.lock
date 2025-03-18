@@ -223,6 +223,7 @@ dependencies = [
  "serde",
  "syntect",
  "toml",
+ "yazi-prebuild",
 ]
 
 [[package]]
@@ -1634,6 +1635,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56c1936c4cc7a1c9ab21a1ebb602eb942ba868cbd44a99cb7cdc5892335e1c85"
 dependencies = [
  "linked-hash-map",
+]
+
+[[package]]
+name = "yazi-prebuild"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f4b6c8e12e39ac0f79fa96f36e5b88e0da8d230691abd729eec709b43c74f632"
+dependencies = [
+ "anyhow",
+ "syntect",
+ "walkdir",
 ]
 
 [[package]]

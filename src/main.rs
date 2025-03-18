@@ -14,11 +14,11 @@ use image::RgbaImage;
 use imageproc::drawing::{draw_filled_circle_mut, draw_text_mut};
 use serde::Deserialize;
 use syntect::highlighting::Theme;
+use syntect::parsing::SyntaxSet;
 // For drawing shapes and text on images
 use syntect::{
     easy::HighlightLines,            // For line-by-line syntax highlighting
     highlighting::{Style, ThemeSet}, // For text style and theme management
-    parsing::SyntaxSet,              // For managing syntax definitions
     util::LinesWithEndings,          // For iterating over code lines with line endings preserved
 };
 
@@ -85,7 +85,7 @@ impl MergedConfig {
             },
             font_size: config.font_size.unwrap_or(24.0),
             padding: config.padding.unwrap_or(40),
-            theme: config.theme.unwrap() || "base16-mocha.dark".to_string(),
+            theme: "base16-mocha.dark".to_string(),
         }
     }
 }
@@ -106,7 +106,7 @@ fn main() -> Result<()> {
 
     // Load default syntax definitions (including newline handling) for highlighting.
     // These definitions are used to identify language-specific syntax.
-    let ps = SyntaxSet::load_defaults_newlines();
+    let ps = SyntaxSet::load_from_folder("../assets/bat-syntaxes")?;
     // Load the default set of themes.
     let ts = ThemeSet::load_defaults();
 
