@@ -1,13 +1,6 @@
 <div align="center" style="border: 2px solid #ffcc00; padding: 16px; border-radius: 8px; background-color: #fffbe6; margin-bottom: 24px;">
 
-### 🚨 **Important Notice: Pull Requests Welcome, But Please Open an Issue First!** 🚨
-
-We're currently planning a **major refactoring and modularization effort** for Carbonrs. While we greatly appreciate pull requests, please:
-
-1. **Open an issue first** to discuss your proposed changes.
-2. Wait for confirmation before starting work on larger features.
-
-This will help us avoid conflicts with ongoing architectural changes and ensure your contributions align with our new structure. Thank you for your understanding and support! 🙏
+### 🚨 **Important Notice: Dropped, find out this awesome cli that has exactly what i was trying to build [silicon](https://github.com/Aloxaf/silicon)!** 🚨
 
 </div>
 
